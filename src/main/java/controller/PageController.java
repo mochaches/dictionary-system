@@ -1,13 +1,20 @@
 package controller;
 
 import dao.PageDAOImpl;
+import dto.PageDto;
+
+import java.util.List;
 
 public class PageController {
     public static void main(String[] args) {
         /**
          * Проверяю добавлене строки в БД, создаю страничку по конструктору и передаю ее в метод
          */
-//        PageDto pageDto = new PageDto(2L,"test2", "content");
+//        PageDto pageDto = PageDto.builder()
+//                .catalog_id(2L)
+//                .name("test2")
+//                .content("content")
+//                .build();
 //        new PageDAOImpl().insertPage(pageDto);
 
         /**
@@ -18,7 +25,7 @@ public class PageController {
         /**
          * Удаление строк из базы по ID
          */
-//        new PageDAOImpl().deletePageById(3L);
+//        new PageDAOImpl().deletePageById(4L);
 
         /**
          * Обновление строки. Метод принимает dto, чтобы не передавать id и новую dto.
@@ -30,7 +37,7 @@ public class PageController {
          * Меняем в итоговой dto контент(new content) и вызываем наш метод
          */
 //        PageDAOImpl pageDAO = new PageDAOImpl();
-//        var dto = pageDAO.getAllPages().stream().filter(page -> page.getName().equals("UpdateTest")).findFirst().get();
+//        var dto = pageDAO.getAllPages().stream().filter(page -> page.getName().equals("test2")).findFirst().get();
 //        dto.setContent("new content");
 //        pageDAO.updatePageById(dto);
 //        System.out.println(dto);

@@ -1,8 +1,7 @@
 package dao;
 
 import dto.PageDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,8 +12,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+@Slf4j
 public class PageDAOImpl implements PageDAO {
-    private static Logger log = LoggerFactory.getLogger(PageDAOImpl.class); //иннициализирую логгер(чтоб комменты в консоль передавать)
 
     @Override
     public PageDto getPageById(Long id) {
@@ -49,13 +48,15 @@ public class PageDAOImpl implements PageDAO {
             log.debug("get all pages");
             ResultSet rs = statement.executeQuery();
             List<PageDto> pages = new ArrayList<>();
-                while (rs.next()) {
-                    pages.add(new PageDto(rs.getLong(1),
-                            rs.getLong(3),
-                            rs.getString(4),
-                            rs.getString(5)));
-                }
-                return pages;
+            while (rs.next()) {
+                pages.add(PageDto.builder()
+                        .id(rs.getLong(1))
+                        .catalog_id(rs.getLong(3))
+                        .name(rs.getString(4))
+                        .content(rs.getString(5))
+                        .build());
+            }
+            return pages;
         } catch (SQLException sqlException) {
             throw new NoSuchElementException("Проблема с обращением к базе данных");
         }
