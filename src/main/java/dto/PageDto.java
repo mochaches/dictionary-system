@@ -7,12 +7,20 @@ public class PageDto {
     private UUID external_id;
     private Long catalog_id;
     private String name;
-    private String context;
+    private String content;
 
-    public PageDto(Long id, String name, String context) {
+
+    public PageDto(Long id, Long catalog_id, String name, String content) {
         this.id = id;
+        this.catalog_id = catalog_id;
         this.name = name;
-        this.context = context;
+        this.content = content;
+    }
+
+    public PageDto(Long catalog_id, String name, String content) {
+        this.catalog_id = catalog_id;
+        this.name = name;
+        this.content = content;
     }
 
     public PageDto() {
@@ -50,19 +58,19 @@ public class PageDto {
         this.name = name;
     }
 
-    public String getContext() {
-        return context;
+    public String getContent() {
+        return content;
     }
 
-    public void setContext(String context) {
-        this.context = context;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public PageDto(Long id, UUID external_id, Long catalog_id, String name, String context) {
+    public PageDto(Long id, UUID external_id, Long catalog_id, String name, String content) {
         this.id = id;
         this.external_id = external_id;
         this.catalog_id = catalog_id;
         this.name = name;
-        this.context = context;
+        this.content = content;
     }
 }
