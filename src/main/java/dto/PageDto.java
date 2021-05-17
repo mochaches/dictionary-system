@@ -1,14 +1,14 @@
 package dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-
 public class PageDto {
     private Long id;
     private UUID external_id;

@@ -70,7 +70,7 @@ public class PageDAOImpl implements PageDAO {
             statement.setLong(1, pageDto.getCatalog_id());
             statement.setString(2, pageDto.getName());
             statement.setString(3, pageDto.getContent());
-            statement.setDouble(4, pageDto.getId());
+            statement.setLong(4, pageDto.getId());
             log.debug("Update");
             int count = statement.executeUpdate();//получаем количество обновленных строк
             System.out.println(count);

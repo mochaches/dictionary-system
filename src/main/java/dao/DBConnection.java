@@ -1,14 +1,13 @@
 package dao;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Slf4j
 public class DBConnection {
-    private static final Logger log = LoggerFactory.getLogger(DBConnection.class);
     private Connection conn = null;
     static final String DB_URL = "jdbc:postgresql://localhost:8080/postgres";
     static final String JDBC_DRIVER = "org.postgresql.Driver";

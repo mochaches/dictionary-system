@@ -22,7 +22,6 @@ public class UserDAOImpl implements UserDAO {
             statement.setLong(1, id);
             log.debug("get User by id {}", id);
             ResultSet rs = statement.executeQuery();
-            //перебираем результаты
             if (rs.next()) {
                 return new UserDto(rs.getLong(1), rs.getString(2), rs.getString(3),
                         rs.getString(4), rs.getString(5), rs.getString(6), rs.getTimestamp(7));
