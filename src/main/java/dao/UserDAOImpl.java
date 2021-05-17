@@ -1,6 +1,6 @@
 package dao;
 
-import dto.PageDto;
+import dto.UserDto;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -10,29 +10,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 @Slf4j
-public class PageDAOImpl implements PageDAO {
+public class UserDAOImpl implements UserDAO {
 
     @Override
-    public PageDto getPageById(Long id) {
-        //try(...){} - try-with-resources конструкции, чтобы не закрывать за собой соединение и statement
-        try (Connection connection = new DBConnection().getConnection();//создаю подключение к БД
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM pages WHERE id = ?")//делаю предподготовленный(против SQL инъекции) запрос
+    public UserDto getUserById(Long id) {
+        try (Connection connection = new DBConnection().getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE id = ?")
         ) {
-            //передаю значения вместо ?. Суть в том, что для каждого указываю конкретный тип:
-            // setLong/setString..то есть ничего другого в запрос не засунешь. В скобках порядковый номер "?" и значение
             statement.setLong(1, id);
-            log.debug("getPageById {}", id);
-            //получаю результат выполнения запроса(для разных запросов метод может отличаться)
+            log.debug("get User by id {}", id);
             ResultSet rs = statement.executeQuery();
-            //перебираем результаты
             if (rs.next()) {
-                //если строка не пустая, формируем DTOшку
-                return new PageDto(rs.getLong(1), rs.getObject(2, UUID.class), rs.getLong(3), rs.getString(4), rs.getString(5));
+                return new UserDto(rs.getLong(1), rs.getString(2), rs.getString(3),
+                        rs.getString(4), rs.getString(5), rs.getString(6), rs.getTimestamp(7));
             } else {
-                log.warn("No page found for id = {}", id);
+                log.warn("No user found for id = {}", id);
             }
         } catch (SQLException sqlException) {
             throw new NoSuchElementException("Проблема с обращением к базе данных");
@@ -41,38 +35,45 @@ public class PageDAOImpl implements PageDAO {
     }
 
     @Override
-    public List<PageDto> getAllPages() {
+    public List<UserDto> getAllUsers() {
         try (Connection connection = new DBConnection().getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM pages");
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM users");
         ) {
-            log.debug("get all pages");
+            log.debug("get all users");
             ResultSet rs = statement.executeQuery();
-            List<PageDto> pages = new ArrayList<>();
+            List<UserDto> users = new ArrayList<>();
             while (rs.next()) {
-                pages.add(PageDto.builder()
+                users.add(UserDto.builder()
                         .id(rs.getLong(1))
-                        .catalog_id(rs.getLong(3))
-                        .name(rs.getString(4))
-                        .content(rs.getString(5))
+                        .login(rs.getString(2))
+                        .hash_password(rs.getString(3))
+                        .email(rs.getString(4))
+                        .full_name(rs.getString(5))
+                        .nickname(rs.getString(6))
+                        .register_date(rs.getTimestamp(7))
                         .build());
             }
-            return pages;
+            return users;
         } catch (SQLException sqlException) {
             throw new NoSuchElementException("Проблема с обращением к базе данных");
         }
     }
 
     @Override
-    public void updatePageById(PageDto pageDto) {
+    public void updateUserById(UserDto userDto) {
         try (Connection connection = new DBConnection().getConnection();
-             PreparedStatement statement = connection.prepareStatement("UPDATE pages SET external_id = DEFAULT, catalog_id = ?, name = ?, content = ? WHERE id = ?");
+             PreparedStatement statement = connection.prepareStatement("UPDATE users SET login = ?, hash_password = ?, " +
+                     "email = ?, full_name = ?, nickname = ?, registration_date= ? WHERE id = ?");
         ) {
-            statement.setLong(1, pageDto.getCatalog_id());
-            statement.setString(2, pageDto.getName());
-            statement.setString(3, pageDto.getContent());
-            statement.setLong(4, pageDto.getId());
+            statement.setString(1, userDto.getLogin());
+            statement.setString(2, userDto.getHash_password());
+            statement.setString(3, userDto.getEmail());
+            statement.setString(4, userDto.getFull_name());
+            statement.setString(5, userDto.getNickname());
+            statement.setTimestamp(6, userDto.getRegister_date());
+            statement.setLong(7, userDto.getId());
             log.debug("Update");
-            int count = statement.executeUpdate();//получаем количество обновленных строк
+            int count = statement.executeUpdate();
             System.out.println(count);
             if (count == 1) {
                 log.info("Update Complete!");
@@ -88,9 +89,9 @@ public class PageDAOImpl implements PageDAO {
     }
 
     @Override
-    public int deletePageById(Long id) {
+    public int deleteUserById(Long id) {
         try (Connection connection = new DBConnection().getConnection();
-             PreparedStatement statement = connection.prepareStatement("DELETE FROM pages WHERE id = ?");
+             PreparedStatement statement = connection.prepareStatement("DELETE FROM users WHERE id = ?");
         ) {
             statement.setLong(1, id);
             log.debug("Delete");
@@ -110,13 +111,15 @@ public class PageDAOImpl implements PageDAO {
     }
 
     @Override
-    public int insertPage(PageDto pageDto) {
+    public int insertUser(UserDto userDto) {
         try (Connection connection = new DBConnection().getConnection();
-             PreparedStatement statement = connection.prepareStatement("INSERT INTO pages (catalog_id, name, content) VALUES (?, ?, ?);")
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO users (login, hash_password, email, full_name, nickname) VALUES (?, ?, ?,?,?);")
         ) {
-            statement.setLong(1, pageDto.getCatalog_id());
-            statement.setString(2, pageDto.getName());
-            statement.setString(3, pageDto.getContent());
+            statement.setString(1, userDto.getLogin());
+            statement.setString(2, userDto.getHash_password());
+            statement.setString(3, userDto.getEmail());
+            statement.setString(4, userDto.getFull_name());
+            statement.setString(5, userDto.getNickname());
             log.debug("Insert");
             int count = statement.executeUpdate();
             System.out.println(count);
